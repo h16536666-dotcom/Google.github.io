@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Тарихшы - Қазақстан тарихы 8-сынып (§14-15)</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Exo+2:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        cyber: {
+                            bg: '#060a12',
+                            card: 'rgba(15, 23, 42, 0.88)',
+                            cyan: '#00f3ff',
+                            gold: '#ffd700',
+                            purple: '#c084fc',
+                            red: '#ff3366',
+                            green: '#00ff88',
+                            border: 'rgba(0, 243, 255, 0.3)'
+                        }
+                    },
+                    fontFamily: {
+                        orbitron: ['Orbitron', 'sans-serif'],
+                        exo: ['Exo 2', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #040711;
+            color: #e2e8f0;
+            font-family: 'Exo 2', sans-serif;
+            overflow-x: hidden;
+        }
+        .neon-border-cyan {
+            box-shadow: 0 0 15px rgba(0, 243, 255, 0.25), inset 0 0 10px rgba(0, 243, 255, 0.15);
+            border: 1px solid rgba(0, 243, 255, 0.4);
+        }
+        .neon-border-gold {
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.25), inset 0 0 10px rgba(255, 215, 0, 0.15);
+            border: 1px solid rgba(255, 215, 0, 0.4);
+        }
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.88);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+        }
+        .cyber-btn {
+            transition: all 0.25s ease;
+            clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
+        }
+        .cyber-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 0 20px rgba(0, 243, 255, 0.6);
+        }
+        .ai-glow {
+            animation: pulse-glow 2.5s infinite alternate;
+        }
+        @keyframes pulse-glow {
+            0% { box-shadow: 0 0 12px rgba(0, 243, 255, 0.3); border-color: rgba(0, 243, 255, 0.4); }
+            100% { box-shadow: 0 0 28px rgba(0, 243, 255, 0.85); border-color: rgba(0, 243, 255, 0.9); }
+        }
+        .kazakh-pattern {
+            background-image: radial-gradient(rgba(0, 243, 255, 0.1) 1.2px, transparent 0);
+            background-size: 26px 26px;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between kazakh-pattern relative select-none">
+
+    <!-- Particle Canvas -->
+    <canvas id="particleCanvas" class="fixed top-0 left-0 w-full h-full pointer-events-none z-0"></canvas>
+
+    <!-- Top Navigation Score Bar -->
+    <header class="relative z-10 border-b border-cyber-border bg-cyber-bg/90 backdrop-blur-md px-4 md:px-8 py-3 flex flex-wrap justify-between items-center gap-3">
+        <div class="flex items-center space-x-3">
+            <div class="w-10 h-10 rounded-lg bg-cyan-500/10 border border-cyber-cyan flex items-center justify-center text-cyber-cyan text-xl neon-border-cyan">
+                <i class="fa-solid fa-brain"></i>
+            </div>
+            <div>
+                <h1 class="font-orbitron font-black text-lg md:text-xl text-white tracking-wider flex items-center gap-2">
+                    ТАРИХИ ИНТЕЛЛЕКТ AI <span class="text-[10px] px-2 py-0.5 rounded bg-cyber-cyan/20 text-cyber-cyan border border-cyber-cyan">§14-15 ЖЭС</span>
+                </h1>
+                <p class="text-xs text-slate-400">3 Топ арасындағы интерактивті ашық сабақ</p>
+            </div>
+        </div>
+
+        <!-- 3 Teams Score Indicators -->
+        <div id="topScoreBoard" class="flex items-center space-x-2 md:space-x-3">
+            <div id="cardTeam1" class="px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-700 text-xs transition-all duration-300">
+                <span id="t1Label" class="font-bold text-cyber-cyan">1-топ:</span>
+                <span id="t1Score" class="font-orbitron font-extrabold text-white text-sm ml-1">0 б</span>
+            </div>
+            <div id="cardTeam2" class="px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-700 text-xs transition-all duration-300">
+                <span id="t2Label" class="font-bold text-cyber-gold">2-топ:</span>
+                <span id="t2Score" class="font-orbitron font-extrabold text-white text-sm ml-1">0 б</span>
+            </div>
+            <div id="cardTeam3" class="px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-700 text-xs transition-all duration-300">
+                <span id="t3Label" class="font-bold text-cyber-purple">3-топ:</span>
+                <span id="t3Score" class="font-orbitron font-extrabold text-white text-sm ml-1">0 б</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Body -->
+    <main class="relative z-10 flex-1 max-w-7xl w-full mx-auto p-4 md:p-6 flex flex-col justify-center">
+
+        <!-- ================= SCREEN 1: REGISTRATION ================= -->
+        <section id="setupScreen" class="glass-panel rounded-2xl p-6 md:p-10 neon-border-cyan text-center max-w-2xl mx-auto w-full">
+            <div class="w-16 h-16 rounded-2xl bg-cyan-500/10 border border-cyber-cyan mx-auto flex items-center justify-center text-cyber-cyan text-3xl mb-4 ai-glow">
+                <i class="fa-solid fa-users-gear"></i>
+            </div>
+            <h2 class="font-orbitron text-2xl md:text-3xl font-extrabold text-white mb-2">
+                САЙЫС ТОПТАРЫН ТІРКЕУ
+            </h2>
+            <p class="text-slate-300 text-xs md:text-sm mb-6">
+                Тақырып: <b>§14-15. «Әскери коммунизм» саясатынан жаңа экономикалық саясатқа көшу</b><br>
+                Әр топ кезекпен <b>3 сұраққа</b> жауап береді. Дұрыс: <b class="text-cyber-green">+5 бал</b> | Қате: <b class="text-cyber-red">-2 бал</b>
+            </p>
+
+            <div class="space-y-3.5 mb-8 text-left bg-black/50 p-5 rounded-xl border border-white/10">
+                <div>
+                    <label class="block text-xs font-orbitron text-cyber-cyan mb-1">1-ШІ ТОП АТАУЫ (1-3 сұрақтар):</label>
+                    <input type="text" id="team1Input" value="1-топ «Жергілікті жасақ»" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-cyber-cyan text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-orbitron text-cyber-gold mb-1">2-ШІ ТОП АТАУЫ (4-6 сұрақтар):</label>
+                    <input type="text" id="team2Input" value="2-топ «Реформаторлар»" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-cyber-gold text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-orbitron text-cyber-purple mb-1">3-ШІ ТОП АТАУЫ (7-9 сұрақтар):</label>
+                    <input type="text" id="team3Input" value="3-топ «Зерттеушілер»" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-cyber-purple text-sm">
+                </div>
+            </div>
+
+            <button onclick="startGame()" class="cyber-btn bg-gradient-to-r from-cyber-cyan via-blue-600 to-indigo-600 hover:opacity-90 text-black font-orbitron font-extrabold text-base px-8 py-3.5 rounded-lg neon-border-cyan w-full">
+                САЙЫСТЫ БАСТАУ <i class="fa-solid fa-play ml-2"></i>
+            </button>
+        </section>
+
+
+        <!-- ================= SCREEN 2: GAMEPLAY (QUESTIONS + AI SIDEBAR) ================= -->
+        <section id="gameplayScreen" class="hidden grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+
+            <!-- LEFT/MAIN: QUESTION PANEL -->
+            <div class="lg:col-span-2 space-y-5">
+                
+                <!-- Current Turn Banner & Step Indicator -->
+                <div class="glass-panel p-4 rounded-xl flex justify-between items-center border border-white/10">
+                    <div class="flex items-center space-x-3">
+                        <span class="text-xs text-slate-400">Қазiргi кезек:</span>
+                        <span id="activeTeamBadge" class="font-orbitron font-bold text-sm px-3 py-1 rounded bg-cyber-cyan/20 text-cyber-cyan border border-cyber-cyan">
+                            1-топ
+                        </span>
+                    </div>
+                    <!-- Step Indicator for Current Team (e.g., 1/3 сұрақ) -->
+                    <div class="flex items-center space-x-2">
+                        <span class="text-xs text-slate-400 font-orbitron">Топ қадамы:</span>
+                        <span id="qProgressBadge" class="font-orbitron font-bold text-cyber-gold text-sm bg-black/60 px-3 py-1 rounded border border-cyber-gold/40">
+                            1/3 сұрақ
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Main Question Box -->
+                <div class="glass-panel p-6 rounded-2xl border border-cyber-cyan/40 space-y-4">
+                    <div class="flex justify-between items-start">
+                        <span id="qCategory" class="text-xs font-orbitron text-cyber-cyan uppercase font-semibold tracking-wider">
+                            📌 ӘСКЕРИ КОММУНИЗМ ЖӘНЕ ЖЭС
+                        </span>
+                        <span id="qOverallCounter" class="text-xs font-orbitron text-slate-400 bg-slate-800 px-2.5 py-1 rounded border border-slate-700">
+                            Жалпы: 1/9
+                        </span>
+                    </div>
+
+                    <h3 id="questionText" class="text-lg md:text-xl font-semibold text-white leading-relaxed min-h-[70px]">
+                        Сұрақ жүктелуде...
+                    </h3>
+
+                    <!-- 4 Options Grid -->
+                    <div id="optionsGrid" class="grid grid-cols-1 md:grid-cols-2 gap-3 pt-2">
+                        <!-- Dynamic Buttons -->
+                    </div>
+                </div>
+
+                <!-- Next Question Button -->
+                <div class="flex justify-between items-center pt-2">
+                    <span class="text-xs text-slate-400 italic">Сұраққа жауап берген соң келесі сұраққа өтіңіз:</span>
+                    <button id="nextBtn" onclick="nextQuestion()" disabled class="cyber-btn opacity-50 cursor-not-allowed bg-slate-800 text-slate-400 font-orbitron font-bold px-6 py-2.5 rounded-lg border border-slate-700 flex items-center gap-2">
+                        <span>КЕЛЕСІ СҰРАҚ</span> <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- RIGHT SIDEBAR: VIRTUAL AI EVALUATOR PANEL -->
+            <div class="lg:col-span-1 glass-panel p-5 rounded-2xl border border-cyber-cyan/60 space-y-4 relative overflow-hidden ai-glow">
+                
+                <!-- AI Assistant Header -->
+                <div class="flex items-center space-x-3 border-b border-white/10 pb-3">
+                    <div class="relative">
+                        <div class="w-12 h-12 rounded-full bg-cyan-500/20 border-2 border-cyber-cyan flex items-center justify-center text-cyber-cyan text-xl">
+                            <i class="fa-solid fa-robot"></i>
+                        </div>
+                        <span class="absolute bottom-0 right-0 w-3.5 h-3.5 bg-green-500 border-2 border-slate-900 rounded-full animate-ping"></span>
+                        <span class="absolute bottom-0 right-0 w-3.5 h-3.5 bg-green-500 border-2 border-slate-900 rounded-full"></span>
+                    </div>
+                    <div>
+                        <h4 class="font-orbitron font-bold text-white text-sm md:text-base">ЖАСАНДЫ ИНТЕЛЛЕКТ САРAПШЫСЫ</h4>
+                        <span class="text-[11px] text-cyber-cyan font-orbitron flex items-center gap-1">
+                            <i class="fa-solid fa-microchip animate-pulse"></i> Виртуалды Бағалаушы
+                        </span>
+                    </div>
+                </div>
+
+                <!-- AI Speech / Response Box -->
+                <div class="bg-black/80 p-4 rounded-xl border border-white/10 min-h-[170px] flex flex-col justify-between">
+                    <div>
+                        <div class="text-[11px] font-orbitron text-slate-400 mb-1.5 flex items-center gap-1">
+                            <i class="fa-solid fa-comment-dots text-cyber-cyan"></i> ЖИ РЕАКЦИЯСЫ:
+                        </div>
+                        <p id="aiSpeechBox" class="text-sm font-semibold text-slate-100 leading-relaxed italic">
+                            «Сәлем! Мен ЖИ Сарапшымын. Жауапты таңдаңыз, мен нәтижесін бағалаймын!»
+                        </p>
+                    </div>
+
+                    <!-- AI Status Tag -->
+                    <div id="aiStatusTag" class="mt-3 text-[11px] font-orbitron px-2.5 py-1 rounded text-center font-bold bg-cyan-500/10 text-cyber-cyan border border-cyber-cyan/30">
+                        СҰРАҚ КҮТУДЕ...
+                    </div>
+                </div>
+
+                <!-- Rule Box -->
+                <div class="bg-slate-900/80 p-3 rounded-lg border border-slate-800 text-[11px] text-slate-400 space-y-1">
+                    <div class="flex justify-between">
+                        <span>Дұрыс жауап:</span>
+                        <span class="text-cyber-green font-bold">+5 бал қосылады</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span>Қате жауап:</span>
+                        <span class="text-cyber-red font-bold">-2 бал азайтылады</span>
+                    </div>
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= SCREEN 3: FINAL AI SUMMARY ================= -->
+        <section id="finalScreen" class="hidden glass-panel rounded-2xl p-6 md:p-8 border border-cyber-gold/50 text-center max-w-4xl mx-auto space-y-6">
+            
+            <div class="w-20 h-20 rounded-full bg-yellow-500/10 border-2 border-cyber-gold mx-auto flex items-center justify-center text-cyber-gold text-4xl neon-border-gold">
+                <i class="fa-solid fa-trophy"></i>
+            </div>
+
+            <div>
+                <span class="text-xs font-orbitron text-cyber-gold uppercase font-bold tracking-wider">САЙЫС АЯҚТАЛДЫ</span>
+                <h2 class="font-orbitron text-2xl md:text-3xl font-extrabold text-white mt-1">
+                    ҚОРЫТЫНДЫ НӘТИЖЕЛЕР ЖӘНЕ ЖИ ТАЛДАУЫ
+                </h2>
+            </div>
+
+            <!-- Final Score Cards (3 Teams) -->
+            <div id="finalScoresContainer" class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <!-- Inserted dynamically via JS -->
+            </div>
+
+            <!-- Winner Banner -->
+            <div id="winnerBanner" class="p-4 rounded-xl bg-gradient-to-r from-yellow-500/20 via-amber-500/30 to-yellow-500/20 border border-cyber-gold text-cyber-gold font-orbitron font-bold text-lg">
+                🏆 ЖЕҢІМПАЗ АНЫҚТАЛУДА...
+            </div>
+
+            <!-- Integrated Dynamic AI Gemini Fact & Comment Box -->
+            <div class="bg-black/80 p-6 rounded-xl border border-cyber-cyan/50 text-left space-y-3">
+                <div class="flex justify-between items-center border-b border-white/10 pb-2">
+                    <div class="flex items-center space-x-2 text-cyber-cyan font-orbitron text-xs font-bold">
+                        <i class="fa-solid fa-wand-magic-sparkles text-cyber-gold text-sm animate-spin"></i>
+                        <span>GEMINI AI: §14-15 ТАРИХИ ҚЫЗЫҚТЫ ДЕРЕК</span>
+                    </div>
+                    <span id="aiLoadingBadge" class="text-[10px] bg-cyber-cyan/20 text-cyber-cyan px-2 py-0.5 rounded border border-cyber-cyan">
+                        ЖИ талдауда...
+                    </span>
+                </div>
+
+                <div id="aiFactContent" class="text-slate-200 text-sm leading-relaxed min-h-[80px]">
+                    <div class="flex items-center space-x-2 text-slate-400 py-4">
+                        <i class="fa-solid fa-circle-notch fa-spin text-cyber-cyan text-lg"></i>
+                        <span>Жасанды Интеллект тақырып бойынша қызықты деректер мен қорытынды дайындауда...</span>
+                    </div>
+                </div>
+            </div>
+
+            <button onclick="location.reload()" class="cyber-btn bg-gradient-to-r from-cyber-cyan to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-black font-orbitron font-bold px-8 py-3.5 rounded-lg text-sm">
+                <i class="fa-solid fa-rotate-right mr-2"></i> ЖАҢА САЙЫС БАСТАУ
+            </button>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="relative z-10 border-t border-cyber-border bg-cyber-bg/90 py-2.5 text-center text-xs text-slate-500">
+        Қазақстан тарихы 8-сынып (§14-15) | Интерактивті Ашық Сабақ Веб-Ойыны
+    </footer>
+
+
+    <!-- ================= JAVASCRIPT LOGIC ================= -->
+    <script>
+        /* ================= AUDIO SYNTHESIS & SOUNDS ================= */
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+        function playSound(type) {
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            const now = audioCtx.currentTime;
+
+            if (type === 'correct') {
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(523.25, now);
+                osc.frequency.setValueAtTime(659.25, now + 0.1);
+                gain.gain.setValueAtTime(0.2, now);
+                gain.gain.linearRampToValueAtTime(0.01, now + 0.35);
+                osc.start(now);
+                osc.stop(now + 0.35);
+            } else if (type === 'wrong') {
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(220, now);
+                osc.frequency.setValueAtTime(146.83, now + 0.15);
+                gain.gain.setValueAtTime(0.25, now);
+                gain.gain.linearRampToValueAtTime(0.01, now + 0.4);
+                osc.start(now);
+                osc.stop(now + 0.4);
+            } else {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(400, now);
+                gain.gain.setValueAtTime(0.08, now);
+                gain.gain.linearRampToValueAtTime(0.01, now + 0.06);
+                osc.start(now);
+                osc.stop(now + 0.06);
+            }
+        }
+
+        function speakAiMessage(text) {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'kk-KZ';
+                utterance.rate = 1.0;
+                window.speechSynthesis.speak(utterance);
+            }
+        }
+
+        /* ================= GAME STATE & DATA (§14-15) ================= */
+        let teams = [
+            { id: 1, name: "1-топ", score: 0 },
+            { id: 2, name: "2-топ", score: 0 },
+            { id: 3, name: "3-топ", score: 0 }
+        ];
+
+        let currentTurnTeamIndex = 0; 
+        let teamQuestionsAnswered = 0; 
+        let totalQuestionsProcessed = 0; 
+        let currentQuestionAnswered = false;
+
+        // 9 Questions dedicated strictly to §14-15 (3 questions per team)
+        const allQuestions = [
+            // --- 1-ТОП СҰРАҚТАРЫ ---
+            {
+                teamIndex: 0,
+                category: "ӘСКЕРИ КОММУНИЗМ САЯСАТЫ",
+                text: "«Әскери коммунизм» саясаты кезінде шаруалардан азық-түлік пен артық өнімді күштеп жинап алу жүйесі қалай аталды?",
+                options: [
+                    "Азық-түлік салғырты (Продразверстка)",
+                    "Азық-түлік салығы (Продналог)",
+                    "Еркін сауда айналымы",
+                    "Жалдамалы еңбек жүйесі"
+                ],
+                correct: 0
+            },
+            {
+                teamIndex: 0,
+                category: "АУЫЛ ШАРУАШЫЛЫҒЫН ТӘРКІЛЕУ",
+                text: "Оқулықтағы плакатта көрсетілгендей «Барлық артық өнім мемлекетке...» деген қатал талап қай кезеңге тән еді?",
+                options: [
+                    "Жаңа экономикалық саясат (ЖЭС)",
+                    "«Әскери коммунизм» саясаты",
+                    "Тың игеру жылдары",
+                    "ХХ ғасырдың соңы"
+                ],
+                correct: 1
+            },
+            {
+                teamIndex: 0,
+                category: "ЖЭС-КЕ КӨШУ КЕЗЕҢІ",
+                text: "«Әскери коммунизмнен» Жаңа экономикалық саясатқа (ЖЭС) көшу туралы шешім ресми түрде қай жылы қабылданды?",
+                options: [
+                    "1917 жылы",
+                    "1921 жылы",
+                    "1925 жылы",
+                    "1930 жылы"
+                ],
+                correct: 1
+            },
+
+            // --- 2-ТОП СҰРАҚТАРЫ ---
+            {
+                teamIndex: 1,
+                category: "ЖАҢА ЭКОНОМИКАЛЫҚ САЯСАТ",
+                text: "Жаңа экономикалық саясаттың (ЖЭС) ең басты ерекшелігі – азық-түлік салғырты немен алмастырылды?",
+                options: [
+                    "Азық-түлік салығымен (Продналог)",
+                    "Түгелдей өнімді тегін тартып алумен",
+                    "Мемлекеттік карточкалық жүйемен",
+                    "Тек алтынмен төлеу жүйесімен"
+                ],
+                correct: 0
+            },
+            {
+                teamIndex: 1,
+                category: "ЕРКІН СΑУДА ЖӘНЕ НАРЫҚ",
+                text: "«Әскери коммунизм» кезінде қатаң тыйым салынған, бірақ ЖЭС енгізілген соң қайта рұқсат етілген бағыт?",
+                options: [
+                    "Жеке сауда және еркін нарық қатынастары",
+                    "Барлық кәсіпорындарды ұлттандыру",
+                    "Ақшасыз өнім айырбастау",
+                    "Мәжбүрлі еңбек міндеткерлігі"
+                ],
+                correct: 0
+            },
+            {
+                teamIndex: 1,
+                category: "САЛЫҚ ЖӘНЕ САЛҒЫРТ АЙЫРМАСЫ",
+                text: "Азық-түлік салығының (продналог) бұрынғы салғырттан (продразверсткадан) басты артықшылығы неде болды?",
+                options: [
+                    "Салық көлемі алдын ала белгіленді және әлдеқайда аз болды",
+                    "Шаруалардан барлық мал-мүлкі тартып алынды",
+                    "Салық тек қала тұрғындарына төлеуге міндеттелді",
+                    "Ешқандай айырмашылығы болған жоқ"
+                ],
+                correct: 0
+            },
+
+            // --- 3-ТОП СҰРАҚТАРЫ ---
+            {
+                teamIndex: 2,
+                category: "АРТЫҚ ӨНІМДІ ЕРКІН ПАЙДАЛАНУ",
+                text: "ЖЭС кезінде шаруаларға мемлекеттік салықты төлегеннен кейінгі өз өнімдерін не істеуге құқық берілді?",
+                options: [
+                    "Нарықта өз қалауынша еркін сатуға",
+                    "Тек мемлекет қорына тегін өткізуге",
+                    "Мүлдем сатуға тыйым салынды",
+                    "Басқа шаруаларға сыйлауға ғана рұқсат етілді"
+                ],
+                correct: 0
+            },
+            {
+                teamIndex: 2,
+                category: "ЖАЛДАМАЛЫ ЕҢБЕК ЖӘНЕ ЖЭС",
+                text: "ЖЭС жылдарында «Әскери коммунизмдегі» жалпыға бірдей еңбек міндеткерлігінің орнына не енгізілді?",
+                options: [
+                    "Жалдамалы еңбек және материалдық ынталандыру",
+                    "Қатаң әскери тәртіп пен штрафтар",
+                    "Тегін қоғамдық жұмыс түрлері",
+                    "Еңбек етуге толық тыйым салу"
+                ],
+                correct: 0
+            },
+            {
+                teamIndex: 2,
+                category: "ҚАЗАҚСТАНДАҒЫ НӘТИЖЕЛЕР",
+                text: "Қазақстанда ЖЭС (НЭП) саясатының жүзеге асырылуының ең басты оң нәтижесі қандай еді?",
+                options: [
+                    "Ауыл шаруашылығы мен мал басы қалпына келіп, шаруашылық жанданды",
+                    "Мал шаруашылығы толығымен жойылды",
+                    "Қалалардың саны күрт азайды",
+                    "Өнеркәсіп орындары жабылып қалды"
+                ],
+                correct: 0
+            }
+        ];
+
+        /* ================= GAME CONTROLLER FUNCTIONS ================= */
+        function startGame() {
+            playSound('click');
+            const t1 = document.getElementById('team1Input').value.trim() || "1-топ";
+            const t2 = document.getElementById('team2Input').value.trim() || "2-топ";
+            const t3 = document.getElementById('team3Input').value.trim() || "3-топ";
+
+            teams[0].name = t1;
+            teams[1].name = t2;
+            teams[2].name = t3;
+
+            document.getElementById('t1Label').innerText = t1 + ":";
+            document.getElementById('t2Label').innerText = t2 + ":";
+            document.getElementById('t3Label').innerText = t3 + ":";
+
+            document.getElementById('setupScreen').classList.add('hidden');
+            document.getElementById('gameplayScreen').classList.remove('hidden');
+
+            updateTurnUI();
+            loadCurrentQuestion();
+        }
+
+        function updateTurnUI() {
+            const activeTeam = teams[currentTurnTeamIndex];
+            const activeBadge = document.getElementById('activeTeamBadge');
+            activeBadge.innerText = activeTeam.name;
+
+            ['cardTeam1', 'cardTeam2', 'cardTeam3'].forEach((id, idx) => {
+                const el = document.getElementById(id);
+                if (idx === currentTurnTeamIndex) {
+                    el.className = "px-3 py-1.5 rounded-lg bg-cyber-cyan/15 border border-cyber-cyan text-xs font-bold neon-border-cyan";
+                } else {
+                    el.className = "px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-xs opacity-50";
+                }
+            });
+
+            document.getElementById('t1Score').innerText = teams[0].score + " б";
+            document.getElementById('t2Score').innerText = teams[1].score + " б";
+            document.getElementById('t3Score').innerText = teams[2].score + " б";
+
+            document.getElementById('qProgressBadge').innerText = `${teamQuestionsAnswered + 1}/3 сұрақ`;
+            document.getElementById('qOverallCounter').innerText = `Жалпы: ${totalQuestionsProcessed + 1}/9`;
+        }
+
+        function loadCurrentQuestion() {
+            currentQuestionAnswered = false;
+
+            const nextBtn = document.getElementById('nextBtn');
+            nextBtn.disabled = true;
+            nextBtn.className = "cyber-btn opacity-50 cursor-not-allowed bg-slate-800 text-slate-400 font-orbitron font-bold px-6 py-2.5 rounded-lg border border-slate-700 flex items-center gap-2";
+
+            const qData = allQuestions[totalQuestionsProcessed];
+            document.getElementById('qCategory').innerText = `📌 ${qData.category}`;
+            document.getElementById('questionText').innerText = qData.text;
+
+            const currentTeamName = teams[currentTurnTeamIndex].name;
+            document.getElementById('aiSpeechBox').innerText = `«${currentTeamName}, бұл сіздердің ${teamQuestionsAnswered + 1}-ші сұрақтарыңыз! Мұқият ойланып, жауапты таңдаңыздар!»`;
+            document.getElementById('aiStatusTag').innerText = "СҰРАҚ КҮТУДЕ...";
+            document.getElementById('aiStatusTag').className = "mt-3 text-[11px] font-orbitron px-2.5 py-1 rounded text-center font-bold bg-cyan-500/10 text-cyber-cyan border border-cyber-cyan/30";
+
+            const optsGrid = document.getElementById('optionsGrid');
+            optsGrid.innerHTML = qData.options.map((opt, i) => `
+                <button onclick="handleAnswer(${i})" class="opt-btn cyber-btn bg-slate-900/90 hover:bg-slate-800 text-slate-200 border border-slate-700 hover:border-cyber-cyan p-3.5 rounded-xl text-left text-sm font-medium transition flex items-center space-x-3">
+                    <span class="w-6 h-6 rounded bg-slate-800 text-cyber-cyan flex items-center justify-center font-bold text-xs shrink-0 border border-slate-700">${String.fromCharCode(65 + i)}</span>
+                    <span class="leading-tight">${opt}</span>
+                </button>
+            `).join('');
+        }
+
+        function handleAnswer(selectedIndex) {
+            if (currentQuestionAnswered) return;
+            currentQuestionAnswered = true;
+
+            const qData = allQuestions[totalQuestionsProcessed];
+            const optButtons = document.querySelectorAll('.opt-btn');
+
+            optButtons.forEach(btn => btn.disabled = true);
+
+            const isCorrect = (selectedIndex === qData.correct);
+
+            if (isCorrect) {
+                playSound('correct');
+                teams[currentTurnTeamIndex].score += 5;
+
+                optButtons[selectedIndex].className = "opt-btn cyber-btn bg-green-950/80 text-green-200 border-2 border-cyber-green p-3.5 rounded-xl text-left text-sm font-bold flex items-center space-x-3";
+
+                const correctMsg = "Жарайсың! Сұраққа дұрыс жауап таптың, отыра ғой! ➕5 бал қосылды! 🎉";
+                
+                document.getElementById('aiSpeechBox').innerText = `«${correctMsg}»`;
+                document.getElementById('aiStatusTag').innerText = "ДҰРЫС ЖАУАП! (+5 БАЛ)";
+                document.getElementById('aiStatusTag').className = "mt-3 text-[11px] font-orbitron px-2.5 py-1 rounded text-center font-bold bg-green-500/20 text-cyber-green border border-green-500/50";
+
+                speakAiMessage(correctMsg);
+            } else {
+                playSound('wrong');
+                teams[currentTurnTeamIndex].score -= 2;
+
+                optButtons[selectedIndex].className = "opt-btn cyber-btn bg-red-950/80 text-red-200 border-2 border-cyber-red p-3.5 rounded-xl text-left text-sm font-medium flex items-center space-x-3";
+                optButtons[qData.correct].className = "opt-btn cyber-btn bg-green-950/60 text-green-300 border border-cyber-green/50 p-3.5 rounded-xl text-left text-sm font-medium flex items-center space-x-3";
+
+                const incorrectMsg = "Ой, өкінішті, бұл қате жауап! ❌ ➖2 бал азайтылды!";
+
+                document.getElementById('aiSpeechBox').innerText = `«${incorrectMsg} Дұрыс жауап: ${qData.options[qData.correct]}»`;
+                document.getElementById('aiStatusTag').innerText = "ҚАТЕ ЖАУАП! (-2 БАЛ)";
+                document.getElementById('aiStatusTag').className = "mt-3 text-[11px] font-orbitron px-2.5 py-1 rounded text-center font-bold bg-red-500/20 text-cyber-red border border-red-500/50";
+
+                speakAiMessage(incorrectMsg);
+            }
+
+            document.getElementById('t1Score').innerText = teams[0].score + " б";
+            document.getElementById('t2Score').innerText = teams[1].score + " б";
+            document.getElementById('t3Score').innerText = teams[2].score + " б";
+
+            const nextBtn = document.getElementById('nextBtn');
+            nextBtn.disabled = false;
+            nextBtn.className = "cyber-btn bg-gradient-to-r from-cyber-cyan to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-black font-orbitron font-bold px-6 py-2.5 rounded-lg flex items-center gap-2 cursor-pointer";
+        }
+
+        function nextQuestion() {
+            playSound('click');
+            teamQuestionsAnswered++;
+            totalQuestionsProcessed++;
+
+            if (totalQuestionsProcessed >= allQuestions.length) {
+                showFinalSummaryScreen();
+                return;
+            }
+
+            if (teamQuestionsAnswered >= 3) {
+                teamQuestionsAnswered = 0;
+                currentTurnTeamIndex++;
+                const nextTeamName = teams[currentTurnTeamIndex].name;
+                alert(`🔔 ${teams[currentTurnTeamIndex - 1].name} өздерінің 3 сұрағын аяқтады!\nКезекті ${nextTeamName} тобы алады!`);
+            }
+
+            updateTurnUI();
+            loadCurrentQuestion();
+        }
+
+        /* ================= FINAL SUMMARY & GEMINI INTEGRATION ================= */
+        async function showFinalSummaryScreen() {
+            document.getElementById('gameplayScreen').classList.add('hidden');
+            document.getElementById('finalScreen').classList.remove('hidden');
+
+            const scoreContainer = document.getElementById('finalScoresContainer');
+            scoreContainer.innerHTML = teams.map((t, i) => `
+                <div class="bg-black/60 p-5 rounded-xl border ${i === 0 ? 'border-cyber-cyan' : (i === 1 ? 'border-cyber-gold' : 'border-cyber-purple')} text-center">
+                    <span class="text-xs font-orbitron text-slate-400">${t.name} НӘТИЖЕСІ:</span>
+                    <h4 class="font-orbitron font-black text-3xl ${i === 0 ? 'text-cyber-cyan' : (i === 1 ? 'text-cyber-gold' : 'text-cyber-purple')} mt-1">${t.score} БАЛЛ</h4>
+                </div>
+            `).join('');
+
+            const winnerBox = document.getElementById('winnerBanner');
+            const sortedTeams = [...teams].sort((a, b) => b.score - a.score);
+
+            if (sortedTeams[0].score > sortedTeams[1].score) {
+                winnerBox.innerHTML = `🏆 САЙЫС ЖЕҢІМПАЗЫ: <span class="text-white">${sortedTeams[0].name.toUpperCase()}</span> (${sortedTeams[0].score} балл)! ҚҰТТЫҚТАЙМЫЗ!`;
+            } else {
+                winnerBox.innerHTML = `🤝 БӘСЕКЕЛЕС САЙЫС! ТАМАША НӘТИЖЕ ЖӘНЕ ТЕҢ ОЙЫН!`;
+            }
+
+            speakAiMessage("Сайыс аяқталды! ЖИ Сарапшы қорытынды тарихи деректі дайындауда.");
+            loadFallbackFact();
+        }
+
+        function loadFallbackFact() {
+            const aiFactContent = document.getElementById('aiFactContent');
+            const aiLoadingBadge = document.getElementById('aiLoadingBadge');
+
+            aiLoadingBadge.innerText = "§14-15 Деректер Базасы";
+            aiLoadingBadge.className = "text-[10px] bg-yellow-500/20 text-cyber-gold px-2 py-0.5 rounded border border-yellow-500/40";
+            
+            aiFactContent.innerHTML = `
+                <p class="leading-relaxed text-slate-100">
+                    <b>📜 ТАРИХИ ҚЫЗЫҚТЫ ДЕРЕК (§14-15):</b> 1921 жылғы наурызда өткен РКП(б) X съезінде «Әскери коммунизм» саясаты жойылып, ЖЭС (НЭП) қабылданды. Бұл реформа ауыл шаруашылығын дағдарыстан құтқарып қана қоймай, Қазақстандағы халықтың тұрмысын жақсартуға үлкен септігін тигізді.<br><br>
+                    🌟 <b>ЖИ Сарапшы бағасы:</b> Сайысқа қатысқан <b>${teams[0].name}</b>, <b>${teams[1].name}</b> және <b>${teams[2].name}</b> топтары «Әскери коммунизм» мен ЖЭС тақырыбын өте жақсы меңгергендерін көрсетті. Баршаңызға сәттілік!
+                </p>
+            `;
+        }
+
+        /* ================= BACKGROUND PARTICLE ANIMATION ================= */
+        const canvas = document.getElementById('particleCanvas');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        const particles = Array.from({ length: 40 }, () => ({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            size: Math.random() * 2 + 1,
+            speedX: (Math.random() - 0.5) * 0.4,
+            speedY: (Math.random() - 0.5) * 0.4,
+            color: Math.random() > 0.5 ? 'rgba(0, 243, 255, 0.35)' : 'rgba(255, 215, 0, 0.35)'
+        }));
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => {
+                p.x += p.speedX;
+                p.y += p.speedY;
+
+                if (p.x < 0 || p.x > canvas.width) p.speedX *= -1;
+                if (p.y < 0 || p.y > canvas.height) p.speedY *= -1;
+
+                ctx.fillStyle = p.color;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                ctx.fill();
+            });
+            requestAnimationFrame(animateParticles);
+        }
+
+        window.onload = function() {
+            animateParticles();
+        };
+    </script>
+</body>
+</html>
